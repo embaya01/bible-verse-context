@@ -14,9 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: { default: "Bible Verse Context", template: "%s — Bible Verse Context" },
+  title: { default: "Unveiled", template: "%s — Unveiled" },
   description:
-    "Plain-English background on any Bible chapter — historical, cultural, and devotional context for casual readers.",
+    "The story behind every chapter. Historical, cultural and devotional context for any Bible passage — in plain English.",
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({
@@ -43,7 +44,7 @@ export default function RootLayout({
             <Link href="/" className="flex items-center gap-2 group">
               <span className="text-lg leading-none">✦</span>
               <span className="font-semibold tracking-tight text-sm text-foreground group-hover:text-foreground/80 transition-colors">
-                Bible Verse Context
+                Unveiled
               </span>
             </Link>
             <nav className="flex items-center gap-4 text-sm text-muted-foreground">

@@ -22,8 +22,8 @@ export default function Home() {
           Evangelical Protestant framing · KJV / WEB translations coming soon
         </div>
         <h1 className="text-4xl font-semibold tracking-tight leading-[1.15]">
-          What was happening<br />
-          <span className="text-muted-foreground font-normal">when this was written?</span>
+          Don&apos;t just read the Bible.<br />
+          <span className="text-muted-foreground font-normal">Understand it.</span>
         </h1>
         <p className="text-base text-muted-foreground max-w-lg">
           Pick any Bible chapter and get the historical, cultural, and devotional

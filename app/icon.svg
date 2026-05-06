@@ -1,0 +1,10 @@
+<svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark warm background -->
+  <rect width="32" height="32" rx="7" fill="#1C1410"/>
+  <!-- Left curtain stroke (parting veil) -->
+  <path d="M6 5 L15 16 L6 27" stroke="#C97B1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Right curtain stroke (parting veil) -->
+  <path d="M26 5 L17 16 L26 27" stroke="#C97B1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Revealed centre glow -->
+  <circle cx="16" cy="16" r="3" fill="#C97B1A"/>
+</svg>

@@ -3,7 +3,7 @@ export default function AboutPage() {
     <article className="prose prose-zinc max-w-none dark:prose-invert">
       <h1>About</h1>
       <p>
-        Bible Verse Context generates plain-English background information for
+        Unveiled generates plain-English background information for
         any chapter of the Bible — historical setting, key people and places,
         cultural and religious context of the original audience, main themes,
         and a brief modern application.
