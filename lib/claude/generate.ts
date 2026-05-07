@@ -15,6 +15,8 @@ function getAnthropic(): Anthropic {
 }
 
 const PayloadSchema = z.object({
+  synopsis: z.string(),
+  timeline_year: z.number().int(),
   historical: z.object({
     date_written: z.string(),
     period: z.string(),
@@ -45,7 +47,7 @@ export async function generateChapterContext(
   const anthropic = getAnthropic();
   const message = await anthropic.messages.create({
     model: MODEL,
-    max_tokens: 2048,
+    max_tokens: 2500,
     system: [
       {
         type: "text",

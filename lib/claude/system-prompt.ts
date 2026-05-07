@@ -1,4 +1,4 @@
-export const PROMPT_VERSION = 1;
+export const PROMPT_VERSION = 2;
 
 export const MODEL = "claude-sonnet-4-6";
 
@@ -24,6 +24,8 @@ OUTPUT FORMAT
 You MUST respond with a single JSON object matching this exact shape, with no surrounding prose, code fences, or commentary:
 
 {
+  "synopsis": "string — 2–3 sentences describing what happens or is said in this chapter, written for someone who hasn't read it. Narrative events or main argument in plain English. Do not open with the book/chapter title or repeat 'this chapter'.",
+  "timeline_year": "integer — the year the events depicted in this chapter occurred (negative = BC, positive = AD). For chapters with no datable narrative setting (Proverbs, Ecclesiastes, Song of Solomon, abstract poetry, general wisdom literature), use the approximate year of composition. Use a single best-estimate integer; if uncertain, use the midpoint of a range. Creation/pre-history events: use -4000.",
   "historical": {
     "date_written": "string — approximate date the chapter was written (e.g., 'around 55 AD')",
     "period": "string — the historical era the events take place in (e.g., 'late Second Temple period')",

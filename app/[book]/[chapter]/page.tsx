@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { getBookBySlug, isValidChapter } from "@/lib/bible/books";
 import { generateAndCacheContext, getCachedContext } from "@/lib/cache/chapter-context";
 import { checkDailyCeiling } from "@/lib/rate-limit";
-import { ContextSections } from "@/components/context-sections";
+import { BibleTimeline } from "@/components/bible-timeline";
+import { ContextCarousel } from "@/components/context-carousel";
 import { Badge } from "@/components/ui/badge";
 
 export const dynamic = "force-dynamic";
@@ -51,24 +52,26 @@ export default async function ChapterPage({
           ← Pick another chapter
         </Link>
 
-        <div className="space-y-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">
-              {book.testament === "OT" ? "Old Testament" : "New Testament"}
-            </Badge>
-            <Badge variant="outline">{payload.historical.date_written}</Badge>
-          </div>
+        <div className="space-y-3">
+          <Badge variant="secondary">
+            {book.testament === "OT" ? "Old Testament" : "New Testament"}
+          </Badge>
           <h1 className="text-3xl font-semibold tracking-tight">
             {book.name}{" "}
             <span className="text-muted-foreground font-normal">{chapter}</span>
           </h1>
-          <p className="text-sm text-muted-foreground">
-            {payload.historical.period}
+          <p className="text-base text-muted-foreground leading-relaxed max-w-prose">
+            {payload.synopsis}
           </p>
         </div>
+
+        <BibleTimeline
+          timelineYear={payload.timeline_year}
+          chapterLabel={`${book.name} ${chapter}`}
+        />
       </header>
 
-      <ContextSections payload={payload} />
+      <ContextCarousel payload={payload} />
     </article>
   );
 }

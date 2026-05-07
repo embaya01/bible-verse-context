@@ -26,6 +26,8 @@ export type ChapterContextRow = {
 };
 
 export type ChapterContextPayload = {
+  synopsis: string;
+  timeline_year: number;
   historical: {
     date_written: string;
     period: string;
