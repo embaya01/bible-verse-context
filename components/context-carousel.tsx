@@ -8,37 +8,40 @@ import {
   useEffect,
 } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import type { ChapterContextPayload } from "@/lib/supabase/client";
 
 const PEEK = 12; // px of adjacent card visible on each side
-const GAP = 16;  // px gap between cards
+const GAP  = 16; // px gap between cards
 
 const SECTION_META = [
   {
+    num: "01",
     icon: "⏳",
-    iconBg: "bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300",
-    title: "Historical background",
+    iconBg: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300",
+    title: "Historical Background",
   },
   {
+    num: "02",
     icon: "◎",
-    iconBg: "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300",
-    title: "People & places",
+    iconBg: "bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300",
+    title: "People & Places",
   },
   {
+    num: "03",
     icon: "⚖",
     iconBg: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300",
-    title: "Cultural & religious context",
+    title: "Cultural & Religious Context",
   },
   {
+    num: "04",
     icon: "✦",
     iconBg: "bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300",
-    title: "Themes & takeaway",
+    title: "Themes & Takeaway",
   },
-];
+] as const;
 
 interface Props {
   payload: ChapterContextPayload;
@@ -50,7 +53,6 @@ export function ContextCarousel({ payload }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef(0);
 
-  // Measure container on mount and resize
   useLayoutEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -64,7 +66,6 @@ export function ContextCarousel({ payload }: Props) {
   const prev = useCallback(() => setIndex((i) => Math.max(0, i - 1)), []);
   const next = useCallback(() => setIndex((i) => Math.min(3, i + 1)), []);
 
-  // Keyboard navigation
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") prev();
@@ -74,20 +75,20 @@ export function ContextCarousel({ payload }: Props) {
     return () => window.removeEventListener("keydown", handler);
   }, [prev, next]);
 
-  const trackOffset =
-    cardWidth > 0 ? -(index * (cardWidth + GAP)) + PEEK : 0;
+  const trackOffset = cardWidth > 0 ? -(index * (cardWidth + GAP)) + PEEK : 0;
 
   return (
     <div className="space-y-4">
-      {/* Navigation — sits above the carousel */}
-      <div className="flex items-center justify-between">
-        {/* Current section name */}
-        <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+
+      {/* ── Navigation bar ─────────────────────────────────────────── */}
+      <div className="flex items-center justify-between px-0.5">
+        {/* Active section name */}
+        <p className="font-display text-base font-medium italic text-muted-foreground truncate pr-4">
           {SECTION_META[index].title}
         </p>
 
-        <div className="flex items-center gap-3">
-          {/* Dot indicators */}
+        <div className="flex items-center gap-3 shrink-0">
+          {/* Step dots */}
           <div className="flex items-center gap-1.5">
             {SECTION_META.map((s, i) => (
               <button
@@ -95,9 +96,9 @@ export function ContextCarousel({ payload }: Props) {
                 onClick={() => setIndex(i)}
                 aria-label={s.title}
                 className={cn(
-                  "h-1.5 rounded-full transition-all duration-200",
+                  "h-1.5 rounded-full transition-all duration-250",
                   i === index
-                    ? "w-5 bg-amber-500"
+                    ? "w-5 bg-amber"
                     : "w-1.5 bg-border hover:bg-muted-foreground/40",
                 )}
               />
@@ -108,47 +109,40 @@ export function ContextCarousel({ payload }: Props) {
             onClick={prev}
             disabled={index === 0}
             aria-label="Previous section"
-            className="flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
+            className="flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground disabled:pointer-events-none disabled:opacity-25"
           >
             <ChevronLeft className="h-3.5 w-3.5" />
           </button>
-
           <button
             onClick={next}
             disabled={index === 3}
             aria-label="Next section"
-            className="flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
+            className="flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-amber/40 hover:text-foreground disabled:pointer-events-none disabled:opacity-25"
           >
             <ChevronRight className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
 
-      {/* Track */}
+      {/* ── Track ──────────────────────────────────────────────────── */}
       <div
         ref={containerRef}
         className="overflow-hidden"
-        onTouchStart={(e) => {
-          touchStartX.current = e.touches[0].clientX;
-        }}
+        onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
         onTouchEnd={(e) => {
           const delta = e.changedTouches[0].clientX - touchStartX.current;
-          if (Math.abs(delta) > 50) delta < 0 ? next() : prev();
+          if (Math.abs(delta) > 50) {
+            if (delta < 0) next(); else prev();
+          }
         }}
       >
         <div
           className="flex transition-transform duration-300 ease-out"
-          style={{
-            gap: `${GAP}px`,
-            transform: `translateX(${trackOffset}px)`,
-          }}
+          style={{ gap: `${GAP}px`, transform: `translateX(${trackOffset}px)` }}
         >
-          {/* Card 0 — Historical */}
-          <SectionCard
-            meta={SECTION_META[0]}
-            width={cardWidth}
-            active={index === 0}
-          >
+
+          {/* ── Card 0 — Historical ──────────────────────────────── */}
+          <SectionCard meta={SECTION_META[0]} width={cardWidth} active={index === 0}>
             <dl className="space-y-4 text-sm">
               {(
                 [
@@ -160,46 +154,32 @@ export function ContextCarousel({ payload }: Props) {
                 ] as const
               ).map(([label, value]) => (
                 <div key={label}>
-                  <dt className="mb-0.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <dt className="mb-0.5 text-[10px] font-sans font-medium uppercase tracking-[0.16em] text-amber/70">
                     {label}
                   </dt>
-                  <dd className="leading-relaxed">{value}</dd>
+                  <dd className="leading-relaxed text-foreground/90">{value}</dd>
                 </div>
               ))}
             </dl>
           </SectionCard>
 
-          {/* Card 1 — People & Places */}
-          <SectionCard
-            meta={SECTION_META[1]}
-            width={cardWidth}
-            active={index === 1}
-          >
+          {/* ── Card 1 — People & Places ─────────────────────────── */}
+          <SectionCard meta={SECTION_META[1]} width={cardWidth} active={index === 1}>
             {payload.people_places.people.length === 0 &&
             payload.people_places.places.length === 0 ? (
-              <p className="text-sm text-muted-foreground italic">
+              <p className="text-sm text-muted-foreground italic font-display">
                 No specific named people or places in this chapter.
               </p>
             ) : (
               <div className="grid gap-5 sm:grid-cols-2">
-                <NamedGroup
-                  heading="People"
-                  items={payload.people_places.people}
-                />
-                <NamedGroup
-                  heading="Places"
-                  items={payload.people_places.places}
-                />
+                <NamedGroup heading="People" items={payload.people_places.people} />
+                <NamedGroup heading="Places" items={payload.people_places.places} />
               </div>
             )}
           </SectionCard>
 
-          {/* Card 2 — Cultural & Religious */}
-          <SectionCard
-            meta={SECTION_META[2]}
-            width={cardWidth}
-            active={index === 2}
-          >
+          {/* ── Card 2 — Cultural & Religious ────────────────────── */}
+          <SectionCard meta={SECTION_META[2]} width={cardWidth} active={index === 2}>
             <div className="space-y-5">
               <BulletGroup
                 heading="Customs of the era"
@@ -207,7 +187,7 @@ export function ContextCarousel({ payload }: Props) {
               />
               {payload.cultural_religious.surrounding_cultures.length > 0 && (
                 <>
-                  <Separator />
+                  <Separator className="bg-border/50" />
                   <BulletGroup
                     heading="Surrounding cultures"
                     items={payload.cultural_religious.surrounding_cultures}
@@ -216,7 +196,7 @@ export function ContextCarousel({ payload }: Props) {
               )}
               {payload.cultural_religious.audience_beliefs.length > 0 && (
                 <>
-                  <Separator />
+                  <Separator className="bg-border/50" />
                   <BulletGroup
                     heading="What the original audience believed"
                     items={payload.cultural_religious.audience_beliefs}
@@ -226,22 +206,18 @@ export function ContextCarousel({ payload }: Props) {
             </div>
           </SectionCard>
 
-          {/* Card 3 — Themes & Takeaway */}
-          <SectionCard
-            meta={SECTION_META[3]}
-            width={cardWidth}
-            active={index === 3}
-          >
+          {/* ── Card 3 — Themes & Takeaway ───────────────────────── */}
+          <SectionCard meta={SECTION_META[3]} width={cardWidth} active={index === 3}>
             <div className="space-y-5">
               {payload.themes_takeaway.main_themes.length > 0 && (
-                <div className="space-y-2">
-                  <SectionLabel>Main themes</SectionLabel>
+                <div className="space-y-2.5">
+                  <FieldLabel>Main themes</FieldLabel>
                   <div className="flex flex-wrap gap-1.5">
                     {payload.themes_takeaway.main_themes.map((theme) => (
                       <Badge
                         key={theme}
                         variant="outline"
-                        className="text-xs"
+                        className="text-xs font-sans border-amber/25 text-foreground/80"
                       >
                         {theme}
                       </Badge>
@@ -252,15 +228,12 @@ export function ContextCarousel({ payload }: Props) {
 
               {payload.themes_takeaway.cross_references.length > 0 && (
                 <>
-                  <Separator />
-                  <div className="space-y-2">
-                    <SectionLabel>Cross-references</SectionLabel>
+                  <Separator className="bg-border/50" />
+                  <div className="space-y-2.5">
+                    <FieldLabel>Cross-references</FieldLabel>
                     <ul className="space-y-2">
                       {payload.themes_takeaway.cross_references.map((ref) => (
-                        <li
-                          key={ref.reference}
-                          className="flex gap-2 text-sm"
-                        >
+                        <li key={ref.reference} className="flex gap-2 text-sm">
                           <Badge
                             variant="secondary"
                             className="shrink-0 font-mono text-[10px] tracking-wide"
@@ -279,9 +252,9 @@ export function ContextCarousel({ payload }: Props) {
 
               {payload.themes_takeaway.application && (
                 <>
-                  <Separator />
-                  <div className="space-y-2">
-                    <SectionLabel>Application</SectionLabel>
+                  <Separator className="bg-border/50" />
+                  <div className="space-y-2.5">
+                    <FieldLabel>Application</FieldLabel>
                     <p className="text-sm leading-relaxed">
                       {payload.themes_takeaway.application}
                     </p>
@@ -290,6 +263,7 @@ export function ContextCarousel({ payload }: Props) {
               )}
             </div>
           </SectionCard>
+
         </div>
       </div>
 
@@ -320,31 +294,41 @@ function SectionCard({
         minWidth: 0,
       }}
     >
-      <Card className="w-full gap-0 overflow-hidden transition-shadow duration-200 hover:shadow-md">
-        <CardHeader className="border-b border-border/60 pb-4">
-          <div className="flex items-center gap-3">
+      <div className="w-full overflow-hidden rounded-xl border border-border bg-card ring-1 ring-foreground/5 transition-shadow duration-200 hover:shadow-md">
+        {/* Card header with large ghost numeral */}
+        <div className="border-b border-border/60 px-5 pt-5 pb-4">
+          <div className="flex items-start justify-between">
+            <div className="space-y-1.5">
+              {/* Ghost section numeral */}
+              <span className="block font-display text-7xl font-light leading-none text-foreground/[0.065] select-none tabular-nums">
+                {meta.num}
+              </span>
+              {/* Section title */}
+              <h3 className="text-[11px] font-sans font-medium uppercase tracking-[0.18em] text-foreground/80">
+                {meta.title}
+              </h3>
+            </div>
+            {/* Icon badge */}
             <span
               className={cn(
-                "inline-flex h-8 w-8 items-center justify-center rounded-lg text-sm",
+                "inline-flex h-7 w-7 items-center justify-center rounded-md text-sm shrink-0 mt-1",
                 meta.iconBg,
               )}
             >
               {meta.icon}
             </span>
-            <CardTitle className="text-base font-semibold">
-              {meta.title}
-            </CardTitle>
           </div>
-        </CardHeader>
-        <CardContent className="pt-5">{children}</CardContent>
-      </Card>
+        </div>
+
+        <div className="px-5 py-5">{children}</div>
+      </div>
     </div>
   );
 }
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
+function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+    <p className="text-[10px] font-sans font-medium uppercase tracking-[0.16em] text-amber/70">
       {children}
     </p>
   );
@@ -360,11 +344,11 @@ function NamedGroup({
   if (items.length === 0) return null;
   return (
     <div className="space-y-2">
-      <SectionLabel>{heading}</SectionLabel>
-      <ul className="space-y-2">
+      <FieldLabel>{heading}</FieldLabel>
+      <ul className="space-y-2.5">
         {items.map((item) => (
           <li key={item.name} className="text-sm leading-relaxed">
-            <span className="font-medium">{item.name}</span>
+            <span className="font-medium text-foreground">{item.name}</span>
             <span className="text-muted-foreground"> — {item.description}</span>
           </li>
         ))}
@@ -383,12 +367,12 @@ function BulletGroup({
   if (items.length === 0) return null;
   return (
     <div className="space-y-2">
-      <SectionLabel>{heading}</SectionLabel>
+      <FieldLabel>{heading}</FieldLabel>
       <ul className="space-y-1.5">
         {items.map((item, i) => (
-          <li key={i} className="flex gap-2 text-sm leading-relaxed">
-            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground/50" />
-            {item}
+          <li key={i} className="flex gap-2.5 text-sm leading-relaxed">
+            <span className="mt-[0.45rem] h-1 w-1 shrink-0 rounded-full bg-amber/50" />
+            <span className="text-foreground/90">{item}</span>
           </li>
         ))}
       </ul>

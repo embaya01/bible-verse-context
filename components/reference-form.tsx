@@ -24,7 +24,9 @@ export function ReferenceForm({ books }: Props) {
     e.preventDefault();
     const ch = Number(chapter);
     if (!ch || ch < 1 || ch > selectedBook.chapters) {
-      setError(`${selectedBook.name} has ${selectedBook.chapters} chapter${selectedBook.chapters > 1 ? "s" : ""}.`);
+      setError(
+        `${selectedBook.name} has ${selectedBook.chapters} chapter${selectedBook.chapters > 1 ? "s" : ""}.`,
+      );
       return;
     }
     setError(null);
@@ -32,11 +34,20 @@ export function ReferenceForm({ books }: Props) {
     router.push(`/${selectedBook.slug}/${ch}`);
   }
 
+  const inputBase = cn(
+    "w-full rounded-lg border border-input bg-background px-3 py-2 text-sm font-sans",
+    "ring-offset-background transition-colors",
+    "focus:outline-none focus:ring-2 focus:ring-amber/40 focus:ring-offset-1 focus:border-amber/50",
+  );
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-        <label className="flex-1 space-y-1.5 text-sm">
-          <span className="font-medium text-foreground">Book</span>
+        {/* Book select */}
+        <label className="flex-1 space-y-1.5">
+          <span className="text-[10px] font-sans font-medium uppercase tracking-[0.16em] text-muted-foreground">
+            Book
+          </span>
           <select
             value={bookSlug}
             onChange={(e) => {
@@ -44,11 +55,7 @@ export function ReferenceForm({ books }: Props) {
               setChapter(1);
               setError(null);
             }}
-            className={cn(
-              "w-full rounded-lg border border-input bg-background px-3 py-2 text-sm",
-              "ring-offset-background transition-colors",
-              "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-            )}
+            className={inputBase}
           >
             <optgroup label="Old Testament">
               {books
@@ -71,8 +78,11 @@ export function ReferenceForm({ books }: Props) {
           </select>
         </label>
 
-        <label className="space-y-1.5 text-sm sm:w-28">
-          <span className="font-medium text-foreground">Chapter</span>
+        {/* Chapter input */}
+        <label className="space-y-1.5 sm:w-28">
+          <span className="text-[10px] font-sans font-medium uppercase tracking-[0.16em] text-muted-foreground">
+            Chapter
+          </span>
           <input
             type="number"
             min={1}
@@ -82,19 +92,15 @@ export function ReferenceForm({ books }: Props) {
               setChapter(parseInt(e.target.value, 10) || 1);
               setError(null);
             }}
-            className={cn(
-              "w-full rounded-lg border border-input bg-background px-3 py-2 text-sm",
-              "ring-offset-background transition-colors",
-              "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-              error && "border-destructive focus:ring-destructive",
-            )}
+            className={cn(inputBase, error && "border-destructive focus:ring-destructive/40")}
           />
         </label>
 
+        {/* Submit */}
         <Button
           type="submit"
           disabled={loading}
-          className="sm:mb-0 transition-all duration-150"
+          className="sm:mb-0 transition-all duration-200 font-sans"
         >
           {loading ? (
             <span className="flex items-center gap-2">
@@ -108,11 +114,11 @@ export function ReferenceForm({ books }: Props) {
       </div>
 
       {error && (
-        <p className="text-sm text-destructive animate-fade-in">{error}</p>
+        <p className="text-sm text-destructive animate-fade-in font-sans">{error}</p>
       )}
 
       {selectedBook.chapters > 1 && (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-[11px] text-muted-foreground font-sans">
           {selectedBook.name} has{" "}
           <span className="font-medium">{selectedBook.chapters}</span> chapters.
         </p>

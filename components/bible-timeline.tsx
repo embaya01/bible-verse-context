@@ -63,10 +63,6 @@ export function BibleTimeline({ timelineYear, chapterLabel }: Props) {
     start: Math.max(TIMELINE_START, timelineYear - INITIAL_RANGE / 2),
     end:   Math.min(TIMELINE_END,   timelineYear + INITIAL_RANGE / 2),
   }));
-  // Mirror to ref so event handlers always read the latest value without stale closures
-  const viewRef = useRef(view);
-  viewRef.current = view;
-
   const [activeEvent, setActiveEvent] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -124,7 +120,7 @@ export function BibleTimeline({ timelineYear, chapterLabel }: Props) {
   const dragRef = useRef<{ startX: number; startView: View } | null>(null);
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    dragRef.current = { startX: e.clientX, startView: viewRef.current };
+    dragRef.current = { startX: e.clientX, startView: view };
     setIsDragging(true);
   };
 
@@ -158,13 +154,13 @@ export function BibleTimeline({ timelineYear, chapterLabel }: Props) {
     if (e.touches.length === 1) {
       touchRef.current = {
         mode: "pan", startX: e.touches[0].clientX,
-        startView: viewRef.current, lastDist: 0,
+        startView: view, lastDist: 0,
       };
     } else if (e.touches.length === 2) {
       const dist = Math.abs(e.touches[1].clientX - e.touches[0].clientX);
       touchRef.current = {
         mode: "pinch", startX: 0,
-        startView: viewRef.current, lastDist: dist,
+        startView: view, lastDist: dist,
       };
     }
   };

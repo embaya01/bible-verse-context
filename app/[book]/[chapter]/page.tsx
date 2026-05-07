@@ -6,7 +6,6 @@ import { generateAndCacheContext, getCachedContext } from "@/lib/cache/chapter-c
 import { checkDailyCeiling } from "@/lib/rate-limit";
 import { BibleTimeline } from "@/components/bible-timeline";
 import { ContextCarousel } from "@/components/context-carousel";
-import { Badge } from "@/components/ui/badge";
 
 export const dynamic = "force-dynamic";
 
@@ -43,35 +42,54 @@ export default async function ChapterPage({
   }
 
   return (
-    <article className="space-y-8 animate-slide-up">
-      <header className="space-y-3">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          ← Pick another chapter
-        </Link>
+    <article className="space-y-10 animate-slide-up">
 
-        <div className="space-y-3">
-          <Badge variant="secondary">
+      {/* ── Back link ───────────────────────────────────────────────── */}
+      <Link
+        href="/"
+        className="inline-flex items-center gap-1.5 text-[11px] font-sans uppercase tracking-[0.14em] text-muted-foreground hover:text-foreground transition-colors duration-150"
+      >
+        ← All chapters
+      </Link>
+
+      {/* ── Chapter header ──────────────────────────────────────────── */}
+      <header className="space-y-6">
+
+        {/* Testament + book name + chapter ornament */}
+        <div className="space-y-2">
+          <p className="text-[10px] font-sans uppercase tracking-[0.22em] text-amber/80">
             {book.testament === "OT" ? "Old Testament" : "New Testament"}
-          </Badge>
-          <h1 className="text-3xl font-semibold tracking-tight">
-            {book.name}{" "}
-            <span className="text-muted-foreground font-normal">{chapter}</span>
-          </h1>
-          <p className="text-base text-muted-foreground leading-relaxed max-w-prose">
-            {payload.synopsis}
           </p>
+
+          <h1 className="font-display font-light uppercase tracking-tight leading-[0.92] text-[clamp(3rem,10vw,5.5rem)] text-foreground">
+            {book.name}
+          </h1>
+
+          {/* Chapter ornament row */}
+          <div className="flex items-center gap-3 pt-1">
+            <div className="h-px w-10 bg-amber/50" />
+            <span className="font-display text-sm tracking-[0.22em] text-amber italic">
+              Chapter {chapter}
+            </span>
+            <div className="h-px w-10 bg-amber/50" />
+          </div>
         </div>
 
+        {/* Synopsis — italic Cormorant pull-quote */}
+        <p className="font-display text-[1.2rem] font-normal italic leading-relaxed text-muted-foreground max-w-prose border-l-2 border-amber/30 pl-4">
+          {payload.synopsis}
+        </p>
+
+        {/* Timeline */}
         <BibleTimeline
           timelineYear={payload.timeline_year}
           chapterLabel={`${book.name} ${chapter}`}
         />
       </header>
 
+      {/* ── Content carousel ────────────────────────────────────────── */}
       <ContextCarousel payload={payload} />
+
     </article>
   );
 }

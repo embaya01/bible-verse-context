@@ -1,16 +1,27 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cormorant_Garamond, DM_Sans, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -28,7 +39,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${cormorant.variable} ${dmSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       {/* Apply .dark class based on system preference without FOUC */}
       <head>
@@ -39,18 +50,20 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-sm">
-          <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
+        <header className="sticky top-0 z-50 border-b border-amber/20 bg-background/95 backdrop-blur-sm">
+          <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3.5">
             <Link href="/" className="flex items-center gap-2 group">
-              <span className="text-lg leading-none">✦</span>
-              <span className="font-semibold tracking-tight text-sm text-foreground group-hover:text-foreground/80 transition-colors">
+              <span className="font-display text-amber text-xl leading-none select-none">
+                ✦
+              </span>
+              <span className="font-display text-[1.05rem] tracking-[0.18em] uppercase text-foreground/90 group-hover:text-foreground transition-colors duration-200">
                 Unveiled
               </span>
             </Link>
-            <nav className="flex items-center gap-4 text-sm text-muted-foreground">
+            <nav className="flex items-center">
               <Link
                 href="/about"
-                className="hover:text-foreground transition-colors duration-150"
+                className="text-[11px] font-sans text-muted-foreground hover:text-foreground transition-colors duration-150 uppercase tracking-[0.14em]"
               >
                 About
               </Link>
@@ -62,8 +75,11 @@ export default function RootLayout({
           {children}
         </main>
 
-        <footer className="border-t border-border px-4 py-5 text-center text-xs text-muted-foreground">
-          AI-assisted context. Treat as a starting point, not authoritative commentary.
+        <footer className="border-t border-border/60 px-4 py-7 text-center space-y-1">
+          <p className="text-xs text-muted-foreground tracking-wide">
+            AI-assisted context. Treat as a starting point, not authoritative commentary.
+          </p>
+          <p className="font-display text-sm italic text-amber/50">✦ Unveiled</p>
         </footer>
       </body>
     </html>
