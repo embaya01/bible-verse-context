@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   if (!limit.ok) {
     return NextResponse.json(
       { error: "Too many requests. Try again in an hour." },
-      { status: 429 },
+      { status: 429, headers: { "Retry-After": "3600" } },
     );
   }
 
