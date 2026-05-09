@@ -6,7 +6,8 @@ import { getBookBySlug, isValidChapter } from "@/lib/bible/books";
 import { checkDailyCeiling } from "@/lib/rate-limit";
 import type { ChapterContextPayload } from "@/lib/supabase/client";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
+export const maxDuration = 60;
 
 const PayloadJsonSchema = jsonSchema<ChapterContextPayload>({
   type: "object",

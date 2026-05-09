@@ -4,7 +4,7 @@ import { getBookBySlug, isValidChapter } from "@/lib/bible/books";
 import { generateAndCacheContext, getCachedContext } from "@/lib/cache/chapter-context";
 import { checkDailyCeiling, checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const BodySchema = z.object({
