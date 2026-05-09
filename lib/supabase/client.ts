@@ -25,6 +25,17 @@ export type ChapterContextRow = {
   generated_at: string;
 };
 
+export type VerseContextRow = {
+  id: string;
+  book: string;
+  chapter: number;
+  verse: string;
+  payload: VerseContextPayload;
+  model: string;
+  prompt_version: number;
+  generated_at: string;
+};
+
 export type ChapterContextPayload = {
   synopsis: string;
   timeline_year: number;
@@ -49,4 +60,8 @@ export type ChapterContextPayload = {
     cross_references: { reference: string; note: string }[];
     application: string;
   };
+  scholarly_basis: string[];
 };
+
+// VerseContextPayload shares the same shape so ContextCarousel can be reused.
+export type VerseContextPayload = ChapterContextPayload;

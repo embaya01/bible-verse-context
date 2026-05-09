@@ -99,22 +99,59 @@ export type ParsedReference = {
   chapter: number;
 };
 
+export type ParsedVerseReference = {
+  book: BibleBook;
+  chapter: number;
+  verse: string; // "16" | "28-39"
+};
+
 /**
- * Parse free-text references like "John 3", "1 cor 13", "Psalm 23".
+ * Parse chapter-level references like "John 3", "1 Cor 13", "Psalm 23".
  * Returns null on anything we can't confidently resolve.
  */
 export function parseReference(input: string): ParsedReference | null {
-  const trimmed = input.trim().toLowerCase();
+  const trimmed = input.trim();
   if (!trimmed) return null;
 
-  const match = trimmed.match(/^([1-3]?\s?[a-z][a-z\s]*?)\s+(\d+)$/i);
+  // Must NOT contain a colon (that would be a verse reference)
+  if (trimmed.includes(":")) return null;
+
+  const match = trimmed.match(/^([1-3]?[\s-]?[a-z][a-z\s-]*?)\s+(\d+)$/i);
   if (!match) return null;
 
-  const bookKey = match[1].replace(/\s+/g, " ").trim();
+  const bookKey = match[1].replace(/\s+/g, " ").trim().toLowerCase();
   const chapter = parseInt(match[2], 10);
   const book = BOOK_BY_LOOKUP.get(bookKey);
   if (!book) return null;
   if (!isValidChapter(book, chapter)) return null;
 
   return { book, chapter };
+}
+
+/**
+ * Parse verse-level references like "John 3:16", "Romans 8:28-39".
+ * Returns null on anything we can't confidently resolve.
+ */
+export function parseVerseReference(input: string): ParsedVerseReference | null {
+  const trimmed = input.trim();
+  if (!trimmed) return null;
+
+  // Require a colon separating chapter from verse
+  const match = trimmed.match(/^(.+?)\s+(\d+):(\d+)(?:-(\d+))?$/i);
+  if (!match) return null;
+
+  const bookKey = match[1].replace(/\s+/g, " ").trim().toLowerCase();
+  const chapter  = parseInt(match[2], 10);
+  const vStart   = parseInt(match[3], 10);
+  const vEnd     = match[4] ? parseInt(match[4], 10) : null;
+
+  if (vStart < 1) return null;
+  if (vEnd !== null && vEnd < vStart) return null;
+
+  const book = BOOK_BY_LOOKUP.get(bookKey);
+  if (!book) return null;
+  if (!isValidChapter(book, chapter)) return null;
+
+  const verse = vEnd !== null ? `${vStart}-${vEnd}` : `${vStart}`;
+  return { book, chapter, verse };
 }

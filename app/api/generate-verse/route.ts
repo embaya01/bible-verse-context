@@ -1,15 +1,20 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { getBookBySlug, isValidChapter } from "@/lib/bible/books";
-import { generateAndCacheContext, getCachedContext } from "@/lib/cache/chapter-context";
+import {
+  getCachedVerseContext,
+  generateAndCacheVerseContext,
+  getVerseText,
+} from "@/lib/cache/verse-context";
 import { checkDailyCeiling, checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const BodySchema = z.object({
   book: z.string().min(1),
   chapter: z.number().int().positive(),
+  verse: z.string().min(1), // "16" or "28-39"
 });
 
 export async function POST(request: NextRequest) {
@@ -34,11 +39,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  const book = getBookBySlug(parsed.data.book);
+  const { book: bookSlug, chapter, verse } = parsed.data;
+
+  const book = getBookBySlug(bookSlug);
   if (!book) {
     return NextResponse.json({ error: "Unknown book" }, { status: 404 });
   }
-  if (!isValidChapter(book, parsed.data.chapter)) {
+  if (!isValidChapter(book, chapter)) {
     return NextResponse.json(
       { error: `${book.name} only has ${book.chapters} chapters` },
       { status: 400 },
@@ -46,12 +53,15 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const cached = await getCachedContext(book, parsed.data.chapter);
+    const cached = await getCachedVerseContext(book, chapter, verse);
     if (cached) {
+      const verseText = await getVerseText(book, chapter, verse);
       return NextResponse.json({
         book: book.slug,
-        chapter: parsed.data.chapter,
+        chapter,
+        verse,
         payload: cached,
+        verseText,
         cacheHit: true,
       });
     }
@@ -63,15 +73,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const payload = await generateAndCacheContext(book, parsed.data.chapter);
+    const { payload, verseText } = await generateAndCacheVerseContext(
+      book,
+      chapter,
+      verse,
+    );
+
     return NextResponse.json({
       book: book.slug,
-      chapter: parsed.data.chapter,
+      chapter,
+      verse,
       payload,
+      verseText,
       cacheHit: false,
     });
   } catch (err) {
-    console.error("[/api/generate] error:", err);
+    console.error("[/api/generate-verse] error:", err);
     return NextResponse.json(
       { error: "Failed to generate context" },
       { status: 500 },

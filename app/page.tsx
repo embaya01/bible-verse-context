@@ -1,5 +1,4 @@
-import { ReferenceForm } from "@/components/reference-form";
-import { BOOKS } from "@/lib/bible/books";
+import { ReferenceSearch } from "@/components/reference-search";
 
 const SUGGESTIONS = [
   { book: "genesis",        chapter: 1,  label: "Genesis 1",     note: "The creation" },
@@ -22,16 +21,15 @@ export default function Home() {
         <div className="flex items-center justify-center gap-4">
           <div className="h-px w-14 bg-amber/40" />
           <span className="text-[10px] font-sans uppercase tracking-[0.22em] text-amber/70">
-            Evangelical Protestant · AI-generated context
+            Evangelical Protestant
           </span>
           <div className="h-px w-14 bg-amber/40" />
         </div>
 
         {/* Main headline — Cormorant Garamond, large, light weight */}
         <div>
-          <h1 className="font-display font-light text-[clamp(2.8rem,8.5vw,4.75rem)] leading-[1.06] tracking-tight text-foreground">
-            Don&apos;t just read<br />
-            <em>the Bible.</em>
+          <h1 className="font-display font-light text-[clamp(2.8rem,8.5vw,3.8rem)] leading-[0.95] tracking-tight text-foreground">
+            Don&apos;t just read the Bible.
           </h1>
           <p className="font-display text-[clamp(1.85rem,5.5vw,3.2rem)] font-light italic text-muted-foreground leading-snug mt-1">
             Understand it.
@@ -55,9 +53,9 @@ export default function Home() {
       {/* ── Form ────────────────────────────────────────────────────── */}
       <section className="rounded-2xl border border-border bg-card px-6 py-7 shadow-sm mb-12">
         <p className="font-display text-[1.25rem] font-medium tracking-wide mb-5">
-          Choose a chapter
+          Choose a chapter or verse
         </p>
-        <ReferenceForm books={BOOKS} />
+        <ReferenceSearch />
       </section>
 
       {/* ── Popular chapters ────────────────────────────────────────── */}

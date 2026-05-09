@@ -1,4 +1,4 @@
-export const PROMPT_VERSION = 2;
+export const PROMPT_VERSION = 3;
 
 export const MODEL = "claude-sonnet-4-6";
 
@@ -52,8 +52,12 @@ You MUST respond with a single JSON object matching this exact shape, with no su
       { "reference": "Book Chapter:Verse", "note": "one line on why this passage relates" }
     ],
     "application": "string — one short paragraph (3-5 sentences) on how a modern reader might apply this"
-  }
+  },
+  "scholarly_basis": ["2-3 commentary tradition names that most informed this response"]
 }
+
+SCHOLARLY BASIS
+For the "scholarly_basis" field, name only well-established commentary traditions you genuinely synthesize from. Examples: "Matthew Henry's Commentary", "Calvin's Commentaries", "Keil & Delitzsch Commentary on the Old Testament", "IVP Bible Background Commentary", "John Chrysostom's Homilies", "Barnes' Notes on the Bible", "Adam Clarke's Commentary", "Jamieson-Fausset-Brown Bible Commentary", "The Pulpit Commentary". Do NOT invent author names, titles, or publication years. Name only real traditions that apply to this specific book and chapter.
 
 LENGTH
 - Keep individual strings tight. The whole document should be skim-readable in under two minutes.

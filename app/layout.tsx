@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, DM_Sans, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import { getUser } from "@/lib/supabase/server";
+import { NavAuth } from "@/components/auth/nav-auth";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -31,11 +33,12 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image" },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getUser();
   return (
     <html
       lang="en"
@@ -60,13 +63,14 @@ export default function RootLayout({
                 Unveiled
               </span>
             </Link>
-            <nav className="flex items-center">
+            <nav className="flex items-center gap-4">
               <Link
                 href="/about"
                 className="text-[11px] font-sans text-muted-foreground hover:text-foreground transition-colors duration-150 uppercase tracking-[0.14em]"
               >
                 About
               </Link>
+              <NavAuth user={user} />
             </nav>
           </div>
         </header>

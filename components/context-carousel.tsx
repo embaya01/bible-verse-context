@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import type { ChapterContextPayload } from "@/lib/supabase/client";
+import { ScholarlySource } from "@/components/scholarly-sources";
 
 const PEEK = 12; // px of adjacent card visible on each side
 const GAP  = 16; // px gap between cards
@@ -266,6 +267,8 @@ export function ContextCarousel({ payload }: Props) {
 
         </div>
       </div>
+
+      <ScholarlySource sources={payload.scholarly_basis} />
 
     </div>
   );

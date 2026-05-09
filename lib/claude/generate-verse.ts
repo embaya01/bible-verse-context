@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
-import { MODEL, SYSTEM_PROMPT } from "./system-prompt";
-import type { ChapterContextPayload } from "@/lib/supabase/client";
+import { VERSE_MODEL, VERSE_SYSTEM_PROMPT } from "./verse-prompt";
+import type { VerseContextPayload } from "@/lib/supabase/client";
 import type { BibleBook } from "@/lib/bible/books";
 
 let cached: Anthropic | null = null;
@@ -14,7 +14,7 @@ function getAnthropic(): Anthropic {
   return cached;
 }
 
-const PayloadSchema = z.object({
+const VersePayloadSchema = z.object({
   synopsis: z.string(),
   timeline_year: z.number().int(),
   historical: z.object({
@@ -35,33 +35,38 @@ const PayloadSchema = z.object({
   }),
   themes_takeaway: z.object({
     main_themes: z.array(z.string()),
-    cross_references: z.array(z.object({ reference: z.string(), note: z.string() })),
+    cross_references: z.array(
+      z.object({ reference: z.string(), note: z.string() }),
+    ),
     application: z.string(),
   }),
   scholarly_basis: z.array(z.string()).min(1).max(4),
 });
 
-export async function generateChapterContext(
+export async function generateVerseContext(
   book: BibleBook,
   chapter: number,
-): Promise<ChapterContextPayload> {
+  verse: string,   // "16" or "28-39"
+  verseText: string,
+): Promise<VerseContextPayload> {
   const anthropic = getAnthropic();
+
+  const userMessage =
+    `Generate the context document for ${book.name} ${chapter}:${verse}.\n\n` +
+    `Verse text (KJV):\n"${verseText}"\n\n` +
+    `Return JSON only.`;
+
   const message = await anthropic.messages.create({
-    model: MODEL,
-    max_tokens: 2500,
+    model: VERSE_MODEL,
+    max_tokens: 2000,
     system: [
       {
         type: "text",
-        text: SYSTEM_PROMPT,
+        text: VERSE_SYSTEM_PROMPT,
         cache_control: { type: "ephemeral" },
       },
     ],
-    messages: [
-      {
-        role: "user",
-        content: `Generate the context document for ${book.name} ${chapter}. Return JSON only.`,
-      },
-    ],
+    messages: [{ role: "user", content: userMessage }],
   });
 
   const textBlock = message.content.find((b) => b.type === "text");
@@ -75,11 +80,11 @@ export async function generateChapterContext(
     parsed = JSON.parse(cleaned);
   } catch (err) {
     throw new Error(
-      `Claude returned invalid JSON for ${book.name} ${chapter}: ${(err as Error).message}`,
+      `Claude returned invalid JSON for ${book.name} ${chapter}:${verse}: ${(err as Error).message}`,
     );
   }
 
-  return PayloadSchema.parse(parsed);
+  return VersePayloadSchema.parse(parsed);
 }
 
 function stripCodeFences(text: string): string {
